@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Contact Us</title>
+  <title>GSC Response Form</title>
   <style>
     body {
       margin: 0;
@@ -67,12 +67,12 @@
 <body>
 
   <div class="form-container">
-    <h2>Contact Us</h2>
-    <form id="contact-form">
-      <input id="name" type="text" placeholder="Your Name" required />
-      <input id="email" type="email" placeholder="Your Email" required />
-      <textarea id="message" rows="5" placeholder="Your Message" required></textarea>
-      <button type="submit">Send Message</button>
+    <h2>GSC Response Form</h2>
+    <form id="gsc-form">
+      <input id="firstname" type="text" placeholder="First Name" required />
+      <input id="lastname" type="text" placeholder="Last Name" required />
+      <textarea id="question1" rows="5" placeholder="Your Answer to Question 1" required></textarea>
+      <button type="submit">Submit</button>
     </form>
   </div>
 
@@ -83,21 +83,21 @@
     const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1YnlrZmxseWlmb3ZncWN6b2RwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg5OTA0MzMsImV4cCI6MjA2NDU2NjQzM30.VapXaouVNJP29T6Qc4pW-GyDeduAfjwwg83jkYgKtAM";
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    document.getElementById("contact-form").addEventListener("submit", async function (e) {
+    document.getElementById("gsc-form").addEventListener("submit", async function (e) {
       e.preventDefault();
 
-      const name = document.getElementById("name").value;
-      const email = document.getElementById("email").value;
-      const message = document.getElementById("message").value;
+      const firstname = document.getElementById("firstname").value;
+      const lastname = document.getElementById("lastname").value;
+      const question1 = document.getElementById("question1").value;
 
       const { error } = await supabase
-        .from("contact_form")
-        .insert([{ name, email, message }]);
+        .from("gsc_response")
+        .insert([{ firstname, lastname, question1 }]);
 
       if (error) {
         alert("Submission failed: " + error.message);
       } else {
-        alert("Message sent successfully!");
+        alert("Response submitted successfully!");
         this.reset();
       }
     });
