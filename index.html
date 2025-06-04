@@ -22,13 +22,24 @@
       border-radius: 16px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.1);
       width: 100%;
-      max-width: 400px;
+      max-width: 600px;
     }
 
     h2 {
       text-align: center;
       margin-bottom: 24px;
       color: #333;
+    }
+
+    .name-fields {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .name-fields input {
+      width: 48%;
     }
 
     input, textarea {
@@ -44,6 +55,11 @@
     input:focus, textarea:focus {
       border-color: #74ebd5;
       outline: none;
+    }
+
+    textarea {
+      height: 250px;
+      resize: vertical;
     }
 
     button {
@@ -69,9 +85,17 @@
   <div class="form-container">
     <h2>GSC Response Form</h2>
     <form id="gsc-form">
-      <input id="firstname" type="text" placeholder="First Name" required />
-      <input id="lastname" type="text" placeholder="Last Name" required />
-      <textarea id="question1" rows="5" placeholder="Your Answer to Question 1" required></textarea>
+      <div class="name-fields">
+        <input id="firstname" type="text" placeholder="First Name" required />
+        <input id="lastname" type="text" placeholder="Last Name" required />
+      </div>
+      <textarea id="question1" placeholder="Dear Applicant:
+
+Please read the instructions below and complete the 4-part assignment:
+
+PART I - Enclosed you will find a Study Summary describing a fictional clinical trial investigating the efficacy and safety of an antidepressant drug, genoxyl, in a geriatric population. Your target reader needs a concise overview of the study.
+
+Write a structured abstract (Objectives, Methods, Results, and Conclusion) based on the Study Summary. Your abstract should be structured with appropriate subheadings, should use complete sentences (not phrases as some journals allow), and should be approximately 300 words. List the word count at the end of your abstract." required></textarea>
       <button type="submit">Submit</button>
     </form>
   </div>
