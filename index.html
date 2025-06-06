@@ -222,53 +222,83 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
   </script>
 
   <script>
-    function handleNestedFracs(str) {
-      return str.replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, (_, num, den) => `(${num})/(${den})`);
+  function handleNestedFracs(str) {
+    const fracRegex = /\\frac\s*{([^{}]+)}\s*{([^{}]+)}/g;
+    let result = str;
+    let match;
+
+    while ((match = fracRegex.exec(result)) !== null) {
+      const fullMatch = match[0];
+      const numerator = match[1];
+      const denominator = match[2];
+      const replacement = `(${numerator})/(${denominator})`;
+      result = result.replace(fullMatch, replacement);
+      fracRegex.lastIndex = 0; // Reset regex to catch new replacements
+    }
+    return result;
+  }
+
+  function cleanLatex(input) {
+    let cleaned = input;
+    // Step 1: remove LaTeX wrappers
+    cleaned = cleaned
+      .replace(/\\displaystyle/g, '')
+      .replace(/\\begin\{[^}]+\}|\\end\{[^}]+\}/g, '')
+      .replace(/\{\\displaystyle/g, '')
+      .replace(/^\$+|\$+$/g, '');
+
+    // Step 2: recursively convert nested \frac
+    let prev;
+    do {
+      prev = cleaned;
+      cleaned = handleNestedFracs(cleaned);
+    } while (cleaned !== prev);
+
+    // Step 3: convert known LaTeX math symbols
+    const replacements = [
+      [/\\partial/g, '∂'],
+      [/\\nabla/g, '∇'],
+      [/\\Box/g, '□'],
+      [/\\Delta/g, 'Δ'],
+      [/\\mu/g, 'μ'],
+      [/\\nu/g, 'ν'],
+      [/\\eta/g, 'η'],
+      [/\\alpha/g, 'α'],
+      [/\\beta/g, 'β'],
+      [/\\gamma/g, 'γ'],
+      [/\\theta/g, 'θ'],
+      [/\\sum/g, '∑'],
+      [/\\int/g, '∫'],
+      [/\\infty/g, '∞'],
+      [/\\over/g, '/'],
+      [/\^\{([^}]+)\}/g, '^$1'],
+      [/_\{([^}]+)\}/g, '_$1'],
+      [/\^([a-zA-Z0-9])/g, '^$1'],
+      [/_([a-zA-Z0-9])/g, '_$1'],
+      [/\\,/g, ''],
+      [/\\/g, ''],
+      [/\{|\}/g, '']
+    ];
+
+    for (const [pattern, repl] of replacements) {
+      cleaned = cleaned.replace(pattern, repl);
     }
 
-    function cleanLatex(input) {
-      let cleaned = input;
-      let prev;
-      do {
-        prev = cleaned;
-        cleaned = handleNestedFracs(cleaned);
-      } while (cleaned !== prev);
+    return cleaned.trim();
+  }
 
-      const replacements = [
-        [/\\partial/g, '∂'],
-        [/\\nabla/g, '∇'],
-        [/\\Box/g, '□'],
-        [/\\Delta/g, 'Δ'],
-        [/\\mu/g, 'μ'],
-        [/\\nu/g, 'ν'],
-        [/\\eta/g, 'η'],
-        [/\\alpha/g, 'α'],
-        [/\\beta/g, 'β'],
-        [/\\gamma/g, 'γ'],
-        [/\\theta/g, 'θ'],
-        [/\\sum/g, '∑'],
-        [/\\int/g, '∫'],
-        [/\\infty/g, '∞'],
-        [/\\over/g, '/'],
-        [/\^\{([^}]+)\}/g, '^$1'],
-        [/_\{([^}]+)\}/g, '_$1'],
-        [/\\/g, ''],
-        [/\{|\}/g, '']
-      ];
+  const questionInput = document.getElementById("question1");
 
-      for (const [pattern, repl] of replacements) {
-        cleaned = cleaned.replace(pattern, repl);
-      }
-      return cleaned;
-    }
+  questionInput.addEventListener("paste", (e) => {
+    e.preventDefault();
+    let pasted = (e.clipboardData || window.clipboardData).getData('text');
+    const cleaned = cleanLatex(pasted);
+    questionInput.value = cleaned;
+  });
 
-    const questionInput = document.getElementById("question1");
-    questionInput.addEventListener("paste", (e) => {
-      e.preventDefault();
-      let pasted = (e.clipboardData || window.clipboardData).getData('text');
-      pasted = pasted.replace(/\\displaystyle/g, '').replace(/\\begin\{[^}]+\}|\\end\{[^}]+\}/g, '');
-      questionInput.value = cleanLatex(pasted);
-    });
+  questionInput.addEventListener("input", () => {
+    questionInput.value = cleanLatex(questionInput.value);
+  });
   </script>
 </body>
 </html>
