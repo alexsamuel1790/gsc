@@ -189,7 +189,7 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
     document.getElementById("save-btn").addEventListener("click", () => {
       const firstname = document.getElementById("firstname").value.trim();
       const lastname = document.getElementById("lastname").value.trim();
-      const question1 = document.getElementById("question1").textContent.trim();  // fix here
+      const question1 = document.getElementById("question1").textContent.trim();
 
       localStorage.setItem("firstname", firstname);
       localStorage.setItem("lastname", lastname);
@@ -208,9 +208,10 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
 
       const firstname = document.getElementById("firstname").value.trim();
       const lastname = document.getElementById("lastname").value.trim();
-      const question1 = document.getElementById("question1").textContent.trim();  // fix here
+      const question1 = document.getElementById("question1").textContent.trim();
 
-      if (!firstname || !lastname || !question1) {
+      // Check for real input by removing all whitespace
+      if (!firstname || !lastname || !question1.replace(/\s/g, '')) {
         alert("Please fill out all fields.");
         return;
       }
