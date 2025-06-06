@@ -208,7 +208,7 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
 
       const firstname = document.getElementById("firstname").value.trim();
       const lastname = document.getElementById("lastname").value.trim();
-      const question1 = document.getElementById("question1").textContent.trim();
+      const question1 = document.getElementById("question1").innerText.trim();
 
       // Check for real input by removing all whitespace
       if (!firstname || !lastname || !question1.replace(/\s/g, '')) {
