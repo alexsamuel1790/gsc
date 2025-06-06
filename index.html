@@ -142,54 +142,110 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
     </form>
   </div>
 
-  <script>
-    function cleanLatex(raw) {
-      return raw
-        .replace(/^{\\?displaystyle\s*/, '') // Remove leading {\displaystyle
-        .replace(/\\begin{aligned}|\\end{aligned}/g, '') // Remove \begin{aligned}
-        .replace(/^\{+|\}+$/g, '') // Strip outer {}
-        .replace(/\\\\/g, '\\') // Double backslashes to single
-        .replace(/[\r\n]+/g, ' ') // Replace line breaks with space
-        .replace(/\s+/g, ' ') // Normalize whitespace
-        .replace(/\s*\\\]$/, '') // Remove trailing \]
-        .replace(/^\\\[\s*/, '') // Remove leading \[
-        .trim(); // Final cleanup
+  <script type="module">
+  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+  const supabaseUrl = "https://tubykfllyifovgqczodp.supabase.co";
+  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1YnlrZmxseWlmb3ZncWN6b2RwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg5OTA0MzMsImV4cCI6MjA2NDU2NjQzM30.VapXaouVNJP29T6Qc4pW-GyDeduAfjwwg83jkYgKtAM";
+  const supabase = createClient(supabaseUrl, supabaseKey);
+
+  const form = document.getElementById("gsc-form");
+
+  window.addEventListener("DOMContentLoaded", () => {
+    const firstname = localStorage.getItem("firstname");
+    const lastname = localStorage.getItem("lastname");
+    const question1 = localStorage.getItem("question1");
+    const savedTime = localStorage.getItem("savedTime");
+
+    if (firstname) document.getElementById("firstname").value = firstname;
+    if (lastname) document.getElementById("lastname").value = lastname;
+    if (question1) document.getElementById("question1").value = question1;
+    if (savedTime) document.getElementById("saved-message").textContent = "Draft last saved on: " + savedTime;
+  });
+
+  document.getElementById("save-btn").addEventListener("click", () => {
+    const firstname = document.getElementById("firstname").value;
+    const lastname = document.getElementById("lastname").value;
+    const question1 = document.getElementById("question1").value;
+
+    localStorage.setItem("firstname", firstname);
+    localStorage.setItem("lastname", lastname);
+    localStorage.setItem("question1", question1);
+
+    const savedTime = new Date().toLocaleString();
+    localStorage.setItem("savedTime", savedTime);
+    document.getElementById("saved-message").textContent = "Draft last saved on: " + savedTime;
+
+    alert("Draft saved locally!");
+  });
+
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const firstname = document.getElementById("firstname").value;
+    const lastname = document.getElementById("lastname").value;
+    const question1 = document.getElementById("question1").value;
+
+    const { error } = await supabase
+      .from("gsc_response")
+      .insert([{ firstname, lastname, question1 }]);
+
+    if (error) {
+      alert("Submission failed: " + error.message);
+    } else {
+      alert("Response submitted successfully!");
+      form.reset();
+      localStorage.removeItem("firstname");
+      localStorage.removeItem("lastname");
+      localStorage.removeItem("question1");
+      localStorage.removeItem("savedTime");
+      document.getElementById("saved-message").textContent = "";
     }
+  });
+</script>
 
-    const textarea = document.getElementById('question1');
+<!-- ✅ Extra enhancement script -->
+<script>
+  function cleanLatex(input) {
+    return input
+      .replace(/\\begin\{[^}]+\}|\\end\{[^}]+\}|\\displaystyle|\$|\{|\}/g, '')
+      .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1)/($2)')
+      .replace(/\\sqrt\{([^}]+)\}/g, '√($1)')
+      .replace(/\\partial/g, '∂')
+      .replace(/\\nabla/g, '∇')
+      .replace(/\\Delta/g, 'Δ')
+      .replace(/\\Box/g, '□')
+      .replace(/\\mu/g, 'μ')
+      .replace(/\\nu/g, 'ν')
+      .replace(/\\eta/g, 'η')
+      .replace(/\\alpha/g, 'α')
+      .replace(/\\beta/g, 'β')
+      .replace(/\\gamma/g, 'γ')
+      .replace(/\\theta/g, 'θ')
+      .replace(/\\sum/g, '∑')
+      .replace(/\\int/g, '∫')
+      .replace(/\\infty/g, '∞')
+      .replace(/\\over/g, '/')
+      .replace(/\^\{([^}]+)\}/g, '^$1')
+      .replace(/_\{([^}]+)\}/g, '_$1')
+      .replace(/\\/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
 
-    textarea.addEventListener('input', () => {
-      const original = textarea.value;
-      const cleaned = cleanLatex(original);
-      if (cleaned && original !== `\\[${cleaned}\\]`) {
-        textarea.value = `\\[${cleaned}\\]`;
-      }
-    });
+  const textarea = document.getElementById("question1");
 
-    // Save/Load/Submit logic (optional)
-    document.getElementById("save-btn").addEventListener("click", () => {
-      localStorage.setItem("firstname", document.getElementById("firstname").value);
-      localStorage.setItem("lastname", document.getElementById("lastname").value);
-      localStorage.setItem("question1", document.getElementById("question1").value);
-      localStorage.setItem("savedTime", new Date().toLocaleString());
-      document.getElementById("saved-message").textContent = "Draft last saved on: " + new Date().toLocaleString();
-      alert("Draft saved locally!");
-    });
+  textarea.addEventListener("paste", (e) => {
+    e.preventDefault();
+    const pasted = (e.clipboardData || window.clipboardData).getData('text');
+    const cleaned = cleanLatex(pasted);
+    textarea.value = cleaned;
+  });
 
-    document.getElementById("gsc-form").addEventListener("submit", (e) => {
-      e.preventDefault();
-      alert("Submitted (you can integrate Supabase here)");
-    });
-
-    window.addEventListener("DOMContentLoaded", () => {
-      document.getElementById("firstname").value = localStorage.getItem("firstname") || "";
-      document.getElementById("lastname").value = localStorage.getItem("lastname") || "";
-      document.getElementById("question1").value = localStorage.getItem("question1") || "";
-      document.getElementById("saved-message").textContent =
-        localStorage.getItem("savedTime")
-          ? "Draft last saved on: " + localStorage.getItem("savedTime")
-          : "";
-    });
-  </script>
+  textarea.addEventListener("input", () => {
+    const cleaned = cleanLatex(textarea.value);
+    textarea.value = cleaned;
+  });
+</script>
 </body>
 </html>
