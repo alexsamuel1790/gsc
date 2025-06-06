@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>GSC Response Form</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"></script>
-
   <style>
     body {
       margin: 0;
@@ -182,7 +181,7 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
   <script>
     const supabaseUrl = "https://tubykfllyifovgqczodp.supabase.co";
     const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1YnlrZmxseWlmb3ZncWN6b2RwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg5OTA0MzMsImV4cCI6MjA2NDU2NjQzM30.VapXaouVNJP29T6Qc4pW-GyDeduAfjwwg83jkYgKtAM";
-    const supabase = supabaseJs.createClient(supabaseUrl, supabaseKey);
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
     const form = document.getElementById("gsc-form");
 
@@ -201,9 +200,9 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
 
     // Save button
     document.getElementById("save-btn").addEventListener("click", () => {
-      const firstname = document.getElementById("firstname").value;
-      const lastname = document.getElementById("lastname").value;
-      const question1 = document.getElementById("question1").innerText;
+      const firstname = document.getElementById("firstname").value.trim();
+      const lastname = document.getElementById("lastname").value.trim();
+      const question1 = document.getElementById("question1").innerText.trim();
 
       localStorage.setItem("firstname", firstname);
       localStorage.setItem("lastname", lastname);
@@ -220,9 +219,14 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
     form.addEventListener("submit", async function (e) {
       e.preventDefault();
 
-      const firstname = document.getElementById("firstname").value;
-      const lastname = document.getElementById("lastname").value;
-      const question1 = document.getElementById("question1").innerText;
+      const firstname = document.getElementById("firstname").value.trim();
+      const lastname = document.getElementById("lastname").value.trim();
+      const question1 = document.getElementById("question1").innerText.trim();
+
+      if (!firstname || !lastname || !question1) {
+        alert("Please fill out all fields.");
+        return;
+      }
 
       const { error } = await supabase
         .from("gsc_response")
@@ -234,7 +238,8 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
         alert("Response submitted successfully!");
 
         // Clear form and local storage
-        form.reset();
+        document.getElementById("firstname").value = '';
+        document.getElementById("lastname").value = '';
         document.getElementById("question1").innerText = '';
         localStorage.clear();
         document.getElementById("saved-message").textContent = "";
