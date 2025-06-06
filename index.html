@@ -77,7 +77,7 @@
     }
 
     button {
-      width: 25%;
+      width: 48%;
       padding: 12px;
       background: #5c6bc0;
       color: white;
@@ -104,13 +104,24 @@
       height: 40px;
       cursor: pointer;
     }
+
+    .button-group {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    #saved-message {
+      font-size: 14px;
+      color: #333;
+      text-align: right;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
 
   <div class="form-container">
-
- 
     <h2>GSC Response Form</h2>
 
     <form id="gsc-form">
@@ -119,15 +130,12 @@
         <input id="lastname" type="text" placeholder="Last Name" required />
       </div>
 
-
-
-      
       <div style="display: flex; justify-content: space-between; align-items: center;">
-  <label for="question-display"><strong>Question</strong></label>
-  <a href="https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fraw.githubusercontent.com%2Falexsamuel1790%2Fgsc%2Frefs%2Fheads%2Fmain%2FCore%2520KPI%2520Operational%2520Definitions%2520%2526%2520Targets_EJM.docx&wdOrigin=BROWSELINK" target="_blank" title="Open Study Summary">
-    <img src="https://img.icons8.com/color/32/000000/microsoft-word-2019--v1.png" alt="Word Document" />
-  </a>
-</div>
+        <label for="question-display"><strong>Question</strong></label>
+        <a href="https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fraw.githubusercontent.com%2Falexsamuel1790%2Fgsc%2Frefs%2Fheads%2Fmain%2FCore%2520KPI%2520Operational%2520Definitions%2520%2526%2520Targets_EJM.docx&wdOrigin=BROWSELINK" target="_blank" title="Open Study Summary">
+          <img src="https://img.icons8.com/color/32/000000/microsoft-word-2019--v1.png" alt="Word Document" />
+        </a>
+      </div>
 
       <textarea id="question-display" class="question-textarea" readonly>
 Dear Applicant:
@@ -142,7 +150,12 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
       <label for="question1"><strong>Your Answer</strong></label>
       <textarea id="question1" class="answer-textarea" placeholder="Type your answer here..." required></textarea>
 
-      <button type="submit">Submit</button>
+      <div class="button-group">
+        <button type="button" id="save-btn">Save</button>
+        <button type="submit">Submit</button>
+      </div>
+
+      <div id="saved-message"></div>
     </form>
   </div>
 
@@ -153,7 +166,40 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
     const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1YnlrZmxseWlmb3ZncWN6b2RwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg5OTA0MzMsImV4cCI6MjA2NDU2NjQzM30.VapXaouVNJP29T6Qc4pW-GyDeduAfjwwg83jkYgKtAM";
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    document.getElementById("gsc-form").addEventListener("submit", async function (e) {
+    const form = document.getElementById("gsc-form");
+
+    // Load saved data
+    window.addEventListener("DOMContentLoaded", () => {
+      const firstname = localStorage.getItem("firstname");
+      const lastname = localStorage.getItem("lastname");
+      const question1 = localStorage.getItem("question1");
+      const savedTime = localStorage.getItem("savedTime");
+
+      if (firstname) document.getElementById("firstname").value = firstname;
+      if (lastname) document.getElementById("lastname").value = lastname;
+      if (question1) document.getElementById("question1").value = question1;
+      if (savedTime) document.getElementById("saved-message").textContent = "Draft last saved on: " + savedTime;
+    });
+
+    // Save button
+    document.getElementById("save-btn").addEventListener("click", () => {
+      const firstname = document.getElementById("firstname").value;
+      const lastname = document.getElementById("lastname").value;
+      const question1 = document.getElementById("question1").value;
+
+      localStorage.setItem("firstname", firstname);
+      localStorage.setItem("lastname", lastname);
+      localStorage.setItem("question1", question1);
+
+      const savedTime = new Date().toLocaleString();
+      localStorage.setItem("savedTime", savedTime);
+      document.getElementById("saved-message").textContent = "Draft last saved on: " + savedTime;
+
+      alert("Draft saved locally!");
+    });
+
+    // Submit button
+    form.addEventListener("submit", async function (e) {
       e.preventDefault();
 
       const firstname = document.getElementById("firstname").value;
@@ -168,10 +214,16 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
         alert("Submission failed: " + error.message);
       } else {
         alert("Response submitted successfully!");
-        this.reset();
+
+        // Clear form and local storage
+        form.reset();
+        localStorage.removeItem("firstname");
+        localStorage.removeItem("lastname");
+        localStorage.removeItem("question1");
+        localStorage.removeItem("savedTime");
+        document.getElementById("saved-message").textContent = "";
       }
     });
   </script>
-
 </body>
 </html>
