@@ -34,7 +34,6 @@
       margin-bottom: 24px;
       color: #333;
       font-size: 24px;
-      word-wrap: break-word;
     }
 
     .name-fields {
@@ -65,6 +64,8 @@
 
     textarea {
       resize: vertical;
+      font-family: monospace;
+      white-space: pre-wrap;
     }
 
     .question-textarea {
@@ -93,18 +94,6 @@
       background: #3f51b5;
     }
 
-    .doc-icon {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-    }
-
-    .doc-icon img {
-      width: 40px;
-      height: 40px;
-      cursor: pointer;
-    }
-
     .button-group {
       display: flex;
       justify-content: space-between;
@@ -130,13 +119,7 @@
         <input id="lastname" type="text" placeholder="Last Name" required />
       </div>
 
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <label for="question-display"><strong>Question</strong></label>
-        <a href="https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fraw.githubusercontent.com%2Falexsamuel1790%2Fgsc%2Frefs%2Fheads%2Fmain%2FCore%2520KPI%2520Operational%2520Definitions%2520%2526%2520Targets_EJM.docx&wdOrigin=BROWSELINK" target="_blank" title="Open Study Summary">
-          <img src="https://img.icons8.com/color/32/000000/microsoft-word-2019--v1.png" alt="Word Document" />
-        </a>
-      </div>
-
+      <label for="question-display"><strong>Question</strong></label>
       <textarea id="question-display" class="question-textarea" readonly>
 Dear Applicant:
 
@@ -147,8 +130,8 @@ PART I - Enclosed you will find a Study Summary describing a fictional clinical 
 Write a structured abstract (Objectives, Methods, Results, and Conclusion) based on the Study Summary. Your abstract should be structured with appropriate subheadings, should use complete sentences (not phrases as some journals allow), and should be approximately 300 words. List the word count at the end of your abstract.
       </textarea>
 
-      <label for="question1"><strong>Your Answer</strong></label>
-      <textarea id="question1" class="answer-textarea" placeholder="Type your answer here..." required></textarea>
+      <label for="question1"><strong>Your Answer (Auto-cleaned LaTeX)</strong></label>
+      <textarea id="question1" class="answer-textarea" placeholder="Paste or type LaTeX formula here..." required></textarea>
 
       <div class="button-group">
         <button type="button" id="save-btn">Save</button>
@@ -159,70 +142,53 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
     </form>
   </div>
 
-  <script type="module">
-    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+  <script>
+    function cleanLatex(raw) {
+      return raw
+        .replace(/^{\\?displaystyle\s*/, '') // Remove leading {\displaystyle
+        .replace(/\\begin{aligned}|\\end{aligned}/g, '') // Remove \begin{aligned}
+        .replace(/^\{+|\}+$/g, '') // Strip outer {}
+        .replace(/\\\\/g, '\\') // Double backslashes to single
+        .replace(/[\r\n]+/g, ' ') // Replace line breaks with space
+        .replace(/\s+/g, ' ') // Normalize whitespace
+        .replace(/\s*\\\]$/, '') // Remove trailing \]
+        .replace(/^\\\[\s*/, '') // Remove leading \[
+        .trim(); // Final cleanup
+    }
 
-    const supabaseUrl = "https://tubykfllyifovgqczodp.supabase.co";
-    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1YnlrZmxseWlmb3ZncWN6b2RwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg5OTA0MzMsImV4cCI6MjA2NDU2NjQzM30.VapXaouVNJP29T6Qc4pW-GyDeduAfjwwg83jkYgKtAM";
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const textarea = document.getElementById('question1');
 
-    const form = document.getElementById("gsc-form");
-
-    // Load saved data
-    window.addEventListener("DOMContentLoaded", () => {
-      const firstname = localStorage.getItem("firstname");
-      const lastname = localStorage.getItem("lastname");
-      const question1 = localStorage.getItem("question1");
-      const savedTime = localStorage.getItem("savedTime");
-
-      if (firstname) document.getElementById("firstname").value = firstname;
-      if (lastname) document.getElementById("lastname").value = lastname;
-      if (question1) document.getElementById("question1").value = question1;
-      if (savedTime) document.getElementById("saved-message").textContent = "Draft last saved on: " + savedTime;
+    textarea.addEventListener('input', () => {
+      const original = textarea.value;
+      const cleaned = cleanLatex(original);
+      if (cleaned && original !== `\\[${cleaned}\\]`) {
+        textarea.value = `\\[${cleaned}\\]`;
+      }
     });
 
-    // Save button
+    // Save/Load/Submit logic (optional)
     document.getElementById("save-btn").addEventListener("click", () => {
-      const firstname = document.getElementById("firstname").value;
-      const lastname = document.getElementById("lastname").value;
-      const question1 = document.getElementById("question1").value;
-
-      localStorage.setItem("firstname", firstname);
-      localStorage.setItem("lastname", lastname);
-      localStorage.setItem("question1", question1);
-
-      const savedTime = new Date().toLocaleString();
-      localStorage.setItem("savedTime", savedTime);
-      document.getElementById("saved-message").textContent = "Draft last saved on: " + savedTime;
-
+      localStorage.setItem("firstname", document.getElementById("firstname").value);
+      localStorage.setItem("lastname", document.getElementById("lastname").value);
+      localStorage.setItem("question1", document.getElementById("question1").value);
+      localStorage.setItem("savedTime", new Date().toLocaleString());
+      document.getElementById("saved-message").textContent = "Draft last saved on: " + new Date().toLocaleString();
       alert("Draft saved locally!");
     });
 
-    // Submit button
-    form.addEventListener("submit", async function (e) {
+    document.getElementById("gsc-form").addEventListener("submit", (e) => {
       e.preventDefault();
+      alert("Submitted (you can integrate Supabase here)");
+    });
 
-      const firstname = document.getElementById("firstname").value;
-      const lastname = document.getElementById("lastname").value;
-      const question1 = document.getElementById("question1").value;
-
-      const { error } = await supabase
-        .from("gsc_response")
-        .insert([{ firstname, lastname, question1 }]);
-
-      if (error) {
-        alert("Submission failed: " + error.message);
-      } else {
-        alert("Response submitted successfully!");
-
-        // Clear form and local storage
-        form.reset();
-        localStorage.removeItem("firstname");
-        localStorage.removeItem("lastname");
-        localStorage.removeItem("question1");
-        localStorage.removeItem("savedTime");
-        document.getElementById("saved-message").textContent = "";
-      }
+    window.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("firstname").value = localStorage.getItem("firstname") || "";
+      document.getElementById("lastname").value = localStorage.getItem("lastname") || "";
+      document.getElementById("question1").value = localStorage.getItem("question1") || "";
+      document.getElementById("saved-message").textContent =
+        localStorage.getItem("savedTime")
+          ? "Draft last saved on: " + localStorage.getItem("savedTime")
+          : "";
     });
   </script>
 </body>
