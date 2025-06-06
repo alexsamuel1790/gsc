@@ -181,7 +181,7 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
 
       if (firstname) document.getElementById("firstname").value = firstname;
       if (lastname) document.getElementById("lastname").value = lastname;
-      if (question1) document.getElementById("question1").innerText = question1;
+      if (question1) document.getElementById("question1").textContent = question1;
       if (savedTime) document.getElementById("saved-message").textContent = "Draft last saved on: " + savedTime;
     });
 
@@ -189,7 +189,7 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
     document.getElementById("save-btn").addEventListener("click", () => {
       const firstname = document.getElementById("firstname").value.trim();
       const lastname = document.getElementById("lastname").value.trim();
-      const question1 = document.getElementById("question1").innerText.trim();
+      const question1 = document.getElementById("question1").textContent.trim();  // fix here
 
       localStorage.setItem("firstname", firstname);
       localStorage.setItem("lastname", lastname);
@@ -208,7 +208,7 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
 
       const firstname = document.getElementById("firstname").value.trim();
       const lastname = document.getElementById("lastname").value.trim();
-      const question1 = document.getElementById("question1").innerText.trim();
+      const question1 = document.getElementById("question1").textContent.trim();  // fix here
 
       if (!firstname || !lastname || !question1) {
         alert("Please fill out all fields.");
@@ -225,7 +225,7 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
         alert("Response submitted successfully!");
         document.getElementById("firstname").value = '';
         document.getElementById("lastname").value = '';
-        document.getElementById("question1").innerText = '';
+        document.getElementById("question1").textContent = '';
         localStorage.clear();
         document.getElementById("saved-message").textContent = "";
       }
