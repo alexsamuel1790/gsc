@@ -4,10 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>GSC Response Form</title>
-
-  <!-- MathJax for LaTeX rendering -->
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
-
   <style>
     body {
       margin: 0;
@@ -69,8 +65,6 @@
 
     textarea {
       resize: vertical;
-      font-family: monospace;
-      white-space: pre-wrap;
     }
 
     .question-textarea {
@@ -123,14 +117,6 @@
       text-align: right;
       margin-top: 10px;
     }
-
-    #math-preview {
-      margin-top: 20px;
-      padding: 20px;
-      background: #f4f4f4;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-    }
   </style>
 </head>
 <body>
@@ -161,11 +147,8 @@ PART I - Enclosed you will find a Study Summary describing a fictional clinical 
 Write a structured abstract (Objectives, Methods, Results, and Conclusion) based on the Study Summary. Your abstract should be structured with appropriate subheadings, should use complete sentences (not phrases as some journals allow), and should be approximately 300 words. List the word count at the end of your abstract.
       </textarea>
 
-      <label for="question1"><strong>Your Answer (supports LaTeX)</strong></label>
-      <textarea id="question1" class="answer-textarea" placeholder="Type or paste LaTeX formula here..." required></textarea>
-
-      <label><strong>Rendered Preview:</strong></label>
-      <div id="math-preview">Math will appear here...</div>
+      <label for="question1"><strong>Your Answer</strong></label>
+      <textarea id="question1" class="answer-textarea" placeholder="Type your answer here..." required></textarea>
 
       <div class="button-group">
         <button type="button" id="save-btn">Save</button>
@@ -184,8 +167,6 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     const form = document.getElementById("gsc-form");
-    const textarea = document.getElementById("question1");
-    const preview = document.getElementById("math-preview");
 
     // Load saved data
     window.addEventListener("DOMContentLoaded", () => {
@@ -196,29 +177,15 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
 
       if (firstname) document.getElementById("firstname").value = firstname;
       if (lastname) document.getElementById("lastname").value = lastname;
-      if (question1) {
-        textarea.value = question1;
-        updateMathPreview(question1);
-      }
+      if (question1) document.getElementById("question1").value = question1;
       if (savedTime) document.getElementById("saved-message").textContent = "Draft last saved on: " + savedTime;
     });
-
-    // Live Math Preview
-    textarea.addEventListener("input", () => {
-      const value = textarea.value;
-      updateMathPreview(value);
-    });
-
-    function updateMathPreview(latex) {
-      preview.innerHTML = \\[${latex}\\];
-      if (window.MathJax) MathJax.typesetPromise([preview]);
-    }
 
     // Save button
     document.getElementById("save-btn").addEventListener("click", () => {
       const firstname = document.getElementById("firstname").value;
       const lastname = document.getElementById("lastname").value;
-      const question1 = textarea.value;
+      const question1 = document.getElementById("question1").value;
 
       localStorage.setItem("firstname", firstname);
       localStorage.setItem("lastname", lastname);
@@ -237,7 +204,7 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
 
       const firstname = document.getElementById("firstname").value;
       const lastname = document.getElementById("lastname").value;
-      const question1 = textarea.value;
+      const question1 = document.getElementById("question1").value;
 
       const { error } = await supabase
         .from("gsc_response")
@@ -248,9 +215,12 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
       } else {
         alert("Response submitted successfully!");
 
+        // Clear form and local storage
         form.reset();
-        preview.innerHTML = "Math will appear here...";
-        localStorage.clear();
+        localStorage.removeItem("firstname");
+        localStorage.removeItem("lastname");
+        localStorage.removeItem("question1");
+        localStorage.removeItem("savedTime");
         document.getElementById("saved-message").textContent = "";
       }
     });
