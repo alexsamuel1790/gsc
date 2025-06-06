@@ -222,31 +222,52 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
   </script>
 
   <script>
-    const latexToUnicodeMap = [
-      [/\\partial/g, '∂'],
-      [/\\nabla/g, '∇'],
-      [/\\Box/g, '□'],
-      [/\\Delta/g, 'Δ'],
-      [/\\mu/g, 'μ'],
-      [/\\nu/g, 'ν'],
-      [/\\eta/g, 'η'],
-      [/\\frac\s*{([^}]*)}\s*{([^}]*)}/g, '($1)/($2)'],
-      [/\\over/g, '/'],
-      [/\^\{([^}]*)\}/g, '^$1'],
-      [/_\{([^}]*)\}/g, '_$1'],
-      [/\\/g, ''],
-      [/\{\{|\}\}|\{|\}/g, '']
-    ];
+    function handleNestedFracs(str) {
+      return str.replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, (_, num, den) => `(${num})/(${den})`);
+    }
+
+    function cleanLatex(input) {
+      let cleaned = input;
+      let prev;
+      do {
+        prev = cleaned;
+        cleaned = handleNestedFracs(cleaned);
+      } while (cleaned !== prev);
+
+      const replacements = [
+        [/\\partial/g, '∂'],
+        [/\\nabla/g, '∇'],
+        [/\\Box/g, '□'],
+        [/\\Delta/g, 'Δ'],
+        [/\\mu/g, 'μ'],
+        [/\\nu/g, 'ν'],
+        [/\\eta/g, 'η'],
+        [/\\alpha/g, 'α'],
+        [/\\beta/g, 'β'],
+        [/\\gamma/g, 'γ'],
+        [/\\theta/g, 'θ'],
+        [/\\sum/g, '∑'],
+        [/\\int/g, '∫'],
+        [/\\infty/g, '∞'],
+        [/\\over/g, '/'],
+        [/\^\{([^}]+)\}/g, '^$1'],
+        [/_\{([^}]+)\}/g, '_$1'],
+        [/\\/g, ''],
+        [/\{|\}/g, '']
+      ];
+
+      for (const [pattern, repl] of replacements) {
+        cleaned = cleaned.replace(pattern, repl);
+      }
+      return cleaned;
+    }
 
     const questionInput = document.getElementById("question1");
     questionInput.addEventListener("paste", (e) => {
       e.preventDefault();
       let pasted = (e.clipboardData || window.clipboardData).getData('text');
       pasted = pasted.replace(/\\displaystyle/g, '').replace(/\\begin\{[^}]+\}|\\end\{[^}]+\}/g, '');
-      for (const [pattern, replacement] of latexToUnicodeMap) {
-        pasted = pasted.replace(pattern, replacement);
-      }
-      questionInput.value = pasted;
+      questionInput.value = cleanLatex(pasted);
     });
   </script>
 </body>
