@@ -187,29 +187,6 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
     const textarea = document.getElementById("question1");
     const preview = document.getElementById("math-preview");
 
-    function cleanLatexInput(raw) {
-      let cleaned = raw;
-
-      // Remove Wikipedia-style wrappers
-      cleaned = cleaned.replace(/^{\\displaystyle\s*/, '');
-      cleaned = cleaned.replace(/\\begin{aligned}|\\end{aligned}/g, '');
-      cleaned = cleaned.replace(/^\{+|\}+$/g, '');
-      cleaned = cleaned.replace(/\\\\/g, '\\');
-
-      // Wrap with \[ \] if not already
-      if (!/^\\\[(.*)\\\]$/s.test(cleaned.trim())) {
-        cleaned = `\\[${cleaned.trim()}\\]`;
-      }
-
-      return cleaned.trim();
-    }
-
-    function updateMathPreview(rawInput) {
-      const cleaned = cleanLatexInput(rawInput);
-      preview.innerHTML = cleaned;
-      if (window.MathJax) MathJax.typesetPromise([preview]);
-    }
-
     // Load saved data
     window.addEventListener("DOMContentLoaded", () => {
       const firstname = localStorage.getItem("firstname");
@@ -223,15 +200,21 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
         textarea.value = question1;
         updateMathPreview(question1);
       }
-      if (savedTime) {
-        document.getElementById("saved-message").textContent = "Draft last saved on: " + savedTime;
-      }
+      if (savedTime) document.getElementById("saved-message").textContent = "Draft last saved on: " + savedTime;
     });
 
+    // Live Math Preview
     textarea.addEventListener("input", () => {
-      updateMathPreview(textarea.value);
+      const value = textarea.value;
+      updateMathPreview(value);
     });
 
+    function updateMathPreview(latex) {
+      preview.innerHTML = \\[${latex}\\];
+      if (window.MathJax) MathJax.typesetPromise([preview]);
+    }
+
+    // Save button
     document.getElementById("save-btn").addEventListener("click", () => {
       const firstname = document.getElementById("firstname").value;
       const lastname = document.getElementById("lastname").value;
@@ -248,6 +231,7 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
       alert("Draft saved locally!");
     });
 
+    // Submit button
     form.addEventListener("submit", async function (e) {
       e.preventDefault();
 
@@ -263,6 +247,7 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
         alert("Submission failed: " + error.message);
       } else {
         alert("Response submitted successfully!");
+
         form.reset();
         preview.innerHTML = "Math will appear here...";
         localStorage.clear();
