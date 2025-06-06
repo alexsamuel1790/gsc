@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>GSC Response Form</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"></script>
   <style>
     body {
       margin: 0;
@@ -64,29 +63,27 @@
       outline: none;
     }
 
-    textarea {
+    .question-textarea {
       width: 100%;
+      background: #f9f9f9;
+      height: 250px;
       padding: 12px 16px;
       margin: 10px 0;
       border: 1px solid #ccc;
       border-radius: 8px;
       font-size: 16px;
-      resize: vertical;
-    }
-
-    .question-textarea {
-      background: #f9f9f9;
-      height: 250px;
       resize: none;
     }
 
     .answer-textarea {
-      height: 250px;
-      background-color: white;
+      width: 100%;
+      min-height: 250px;
+      padding: 12px 16px;
+      margin: 10px 0;
       border: 1px solid #ccc;
       border-radius: 8px;
-      padding: 12px 16px;
       font-size: 16px;
+      background: white;
       overflow-y: auto;
     }
 
@@ -110,18 +107,6 @@
 
     button:hover {
       background: #3f51b5;
-    }
-
-    .doc-icon {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-    }
-
-    .doc-icon img {
-      width: 40px;
-      height: 40px;
-      cursor: pointer;
     }
 
     .button-group {
@@ -178,7 +163,9 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
     </form>
   </div>
 
-  <script>
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
     const supabaseUrl = "https://tubykfllyifovgqczodp.supabase.co";
     const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1YnlrZmxseWlmb3ZncWN6b2RwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg5OTA0MzMsImV4cCI6MjA2NDU2NjQzM30.VapXaouVNJP29T6Qc4pW-GyDeduAfjwwg83jkYgKtAM";
     const supabase = createClient(supabaseUrl, supabaseKey);
@@ -236,8 +223,6 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
         alert("Submission failed: " + error.message);
       } else {
         alert("Response submitted successfully!");
-
-        // Clear form and local storage
         document.getElementById("firstname").value = '';
         document.getElementById("lastname").value = '';
         document.getElementById("question1").innerText = '';
