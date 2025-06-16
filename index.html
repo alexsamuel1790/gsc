@@ -265,7 +265,7 @@ const supabase = createClient(
 
       const firstname = document.getElementById("firstname").value.trim();
       const lastname = document.getElementById("lastname").value.trim();
-      const question1 = document.getElementById("question1").innerHTML.trim();
+      const question1 = document.getElementById("question1").innerText.trim();
       const answer1tb = extractTableJSON();
 
       const { error } = await supabase.from("gsc_response").insert([{ firstname, lastname, question1, answer1tb }]);
