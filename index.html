@@ -65,12 +65,15 @@
       resize: vertical;
     }
 
-    .table-controls-wrapper {
-      position: relative;
+    .answer-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
     }
 
     .answer-textarea {
-      height: 250px;
+      height: 220px;
       width: 100%;
       border: 1px solid #ccc;
       border-radius: 8px;
@@ -87,14 +90,10 @@
       padding: 12px 6px;
     }
 
-.table-controls {
-  position: absolute;
-  top: 8px;   /* moves it inside the answer box */
-  right: 8px;
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
+    .table-controls {
+      display: flex;
+      gap: 8px;
+    }
 
     .table-controls input {
       width: 60px;
@@ -172,15 +171,16 @@ PART I - Enclosed you will find a Study Summary describing a fictional clinical 
 Write a structured abstract (Objectives, Methods, Results, and Conclusion) based on the Study Summary. Your abstract should be structured with appropriate subheadings, should use complete sentences (not phrases as some journals allow), and should be approximately 300 words. List the word count at the end of your abstract.
       </textarea>
 
-      <label for="question1"><strong>Your Answer</strong></label>
-      <div class="table-controls-wrapper">
-        <div id="question1" class="answer-textarea" contenteditable="true"></div>
+      <div class="answer-label-row">
+        <label for="question1"><strong>Your Answer</strong></label>
         <div class="table-controls">
           <input id="rows" type="number" min="0" placeholder="Rows" />
           <input id="cols" type="number" min="0" placeholder="Cols" />
           <button type="button" onclick="insertOrExpandTable()">➕ Table</button>
         </div>
       </div>
+
+      <div id="question1" class="answer-textarea" contenteditable="true"></div>
 
       <div class="button-group">
         <button type="button" id="save-btn">Save</button>
