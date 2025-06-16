@@ -34,7 +34,6 @@
       margin-bottom: 24px;
       color: #333;
       font-size: 24px;
-      word-wrap: break-word;
     }
 
     .name-fields {
@@ -48,32 +47,46 @@
       width: 48%;
     }
 
-    input, textarea {
+    input {
       width: 100%;
       padding: 12px 16px;
       margin: 10px 0;
       border: 1px solid #ccc;
       border-radius: 8px;
       font-size: 16px;
-      transition: border-color 0.3s ease;
-    }
-
-    input:focus, textarea:focus {
-      border-color: #74ebd5;
-      outline: none;
-    }
-
-    textarea {
-      resize: vertical;
     }
 
     .question-textarea {
       background: #f9f9f9;
       height: 250px;
+      padding: 12px 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+      resize: none;
+      width: 100%;
     }
 
     .answer-textarea {
       height: 250px;
+      padding: 12px 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: white;
+      font-size: 16px;
+      overflow-y: auto;
+    }
+
+    .answer-textarea table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    .answer-textarea td {
+      border: 1px solid #999;
+      padding: 6px;
+      min-width: 80px;
+      cursor: text;
     }
 
     button {
@@ -86,23 +99,10 @@
       font-size: 16px;
       cursor: pointer;
       margin-top: 12px;
-      transition: background 0.3s ease;
     }
 
     button:hover {
       background: #3f51b5;
-    }
-
-    .doc-icon {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-    }
-
-    .doc-icon img {
-      width: 40px;
-      height: 40px;
-      cursor: pointer;
     }
 
     .button-group {
@@ -121,23 +121,23 @@
 </head>
 <body>
 
-  <div class="form-container">
-    <h2>GSC Response Form</h2>
+<div class="form-container">
+  <h2>GSC Response Form</h2>
 
-    <form id="gsc-form">
-      <div class="name-fields">
-        <input id="firstname" type="text" placeholder="First Name" required />
-        <input id="lastname" type="text" placeholder="Last Name" required />
-      </div>
+  <form id="gsc-form">
+    <div class="name-fields">
+      <input id="firstname" type="text" placeholder="First Name" required />
+      <input id="lastname" type="text" placeholder="Last Name" required />
+    </div>
 
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <label for="question-display"><strong>Question</strong></label>
-        <a href="https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fraw.githubusercontent.com%2Falexsamuel1790%2Fgsc%2Frefs%2Fheads%2Fmain%2FCore%2520KPI%2520Operational%2520Definitions%2520%2526%2520Targets_EJM.docx&wdOrigin=BROWSELINK" target="_blank" title="Open Study Summary">
-          <img src="https://img.icons8.com/color/32/000000/microsoft-word-2019--v1.png" alt="Word Document" />
-        </a>
-      </div>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <label for="question-display"><strong>Question</strong></label>
+      <a href="https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fraw.githubusercontent.com%2Falexsamuel1790%2Fgsc%2Frefs%2Fheads%2Fmain%2FCore%2520KPI%2520Operational%2520Definitions%2520%2526%2520Targets_EJM.docx&wdOrigin=BROWSELINK" target="_blank" title="Open Study Summary">
+        <img src="https://img.icons8.com/color/32/000000/microsoft-word-2019--v1.png" alt="Word Document" />
+      </a>
+    </div>
 
-      <textarea id="question-display" class="question-textarea" readonly>
+    <textarea id="question-display" class="question-textarea" readonly>
 Dear Applicant:
 
 Please read the instructions below and complete the 4-part assignment:
@@ -145,85 +145,137 @@ Please read the instructions below and complete the 4-part assignment:
 PART I - Enclosed you will find a Study Summary describing a fictional clinical trial investigating the efficacy and safety of an antidepressant drug, genoxyl, in a geriatric population. Your target reader needs a concise overview of the study.
 
 Write a structured abstract (Objectives, Methods, Results, and Conclusion) based on the Study Summary. Your abstract should be structured with appropriate subheadings, should use complete sentences (not phrases as some journals allow), and should be approximately 300 words. List the word count at the end of your abstract.
-      </textarea>
+    </textarea>
 
-      <label for="question1"><strong>Your Answer</strong></label>
-      <textarea id="question1" class="answer-textarea" placeholder="Type your answer here..." required></textarea>
+    <label for="question1"><strong>Your Answer</strong></label>
+    <div id="question1" class="answer-textarea" contenteditable="true">
+      <table id="answer-table"></table>
+    </div>
 
-      <div class="button-group">
-        <button type="button" id="save-btn">Save</button>
-        <button type="submit">Submit</button>
+    <div style="margin-top: 10px;">
+      <label><strong>Add Rows/Columns</strong></label>
+      <div style="display: flex; gap: 10px;">
+        <input type="number" id="add-rows" placeholder="Rows" min="1" />
+        <input type="number" id="add-cols" placeholder="Cols" min="1" />
+        <button type="button" onclick="addToExistingTable()">Add</button>
       </div>
+    </div>
 
-      <div id="saved-message"></div>
-    </form>
-  </div>
+    <div class="button-group">
+      <button type="button" id="save-btn">Save</button>
+      <button type="submit">Submit</button>
+    </div>
 
-  <script type="module">
-    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+    <div id="saved-message"></div>
+  </form>
+</div>
 
-    const supabaseUrl = "https://tubykfllyifovgqczodp.supabase.co";
-    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1YnlrZmxseWlmb3ZncWN6b2RwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg5OTA0MzMsImV4cCI6MjA2NDU2NjQzM30.VapXaouVNJP29T6Qc4pW-GyDeduAfjwwg83jkYgKtAM";
-    const supabase = createClient(supabaseUrl, supabaseKey);
+<script type="module">
+  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-    const form = document.getElementById("gsc-form");
+  const supabaseUrl = "https://tubykfllyifovgqczodp.supabase.co";
+  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1YnlrZmxseWlmb3ZncWN6b2RwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg5OTA0MzMsImV4cCI6MjA2NDU2NjQzM30.VapXaouVNJP29T6Qc4pW-GyDeduAfjwwg83jkYgKtAM"; // Replace this with your real anon key
+  const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Load saved data
-    window.addEventListener("DOMContentLoaded", () => {
-      const firstname = localStorage.getItem("firstname");
-      const lastname = localStorage.getItem("lastname");
-      const question1 = localStorage.getItem("question1");
-      const savedTime = localStorage.getItem("savedTime");
+  const form = document.getElementById("gsc-form");
 
-      if (firstname) document.getElementById("firstname").value = firstname;
-      if (lastname) document.getElementById("lastname").value = lastname;
-      if (question1) document.getElementById("question1").value = question1;
-      if (savedTime) document.getElementById("saved-message").textContent = "Draft last saved on: " + savedTime;
-    });
+  // Load saved data
+  window.addEventListener("DOMContentLoaded", () => {
+    const firstname = localStorage.getItem("firstname");
+    const lastname = localStorage.getItem("lastname");
+    const question1 = localStorage.getItem("question1");
+    const savedTime = localStorage.getItem("savedTime");
 
-    // Save button
-    document.getElementById("save-btn").addEventListener("click", () => {
-      const firstname = document.getElementById("firstname").value;
-      const lastname = document.getElementById("lastname").value;
-      const question1 = document.getElementById("question1").value;
+    if (firstname) document.getElementById("firstname").value = firstname;
+    if (lastname) document.getElementById("lastname").value = lastname;
+    if (question1) document.getElementById("question1").innerHTML = question1;
+    if (savedTime) document.getElementById("saved-message").textContent = "Draft last saved on: " + savedTime;
+  });
 
-      localStorage.setItem("firstname", firstname);
-      localStorage.setItem("lastname", lastname);
-      localStorage.setItem("question1", question1);
+  // Save button
+  document.getElementById("save-btn").addEventListener("click", () => {
+    const firstname = document.getElementById("firstname").value.trim();
+    const lastname = document.getElementById("lastname").value.trim();
+    const question1 = document.getElementById("answer-table").outerHTML.trim();
 
-      const savedTime = new Date().toLocaleString();
-      localStorage.setItem("savedTime", savedTime);
-      document.getElementById("saved-message").textContent = "Draft last saved on: " + savedTime;
+    localStorage.setItem("firstname", firstname);
+    localStorage.setItem("lastname", lastname);
+    localStorage.setItem("question1", question1);
 
-      alert("Draft saved locally!");
-    });
+    const savedTime = new Date().toLocaleString();
+    localStorage.setItem("savedTime", savedTime);
+    document.getElementById("saved-message").textContent = "Draft last saved on: " + savedTime;
 
-    // Submit button
-    form.addEventListener("submit", async function (e) {
-      e.preventDefault();
+    alert("Draft saved locally!");
+  });
 
-      const firstname = document.getElementById("firstname").value;
-      const lastname = document.getElementById("lastname").value;
-      const question1 = document.getElementById("question1").value;
+  // Submit button
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();
 
-      const { error } = await supabase
-        .from("gsc_response")
-        .insert([{ firstname, lastname, question1 }]);
+    const firstname = document.getElementById("firstname").value.trim();
+    const lastname = document.getElementById("lastname").value.trim();
+    const question1 = document.getElementById("answer-table").outerHTML.trim();
 
-      if (error) {
-        alert("Submission failed: " + error.message);
-      } else {
-        alert("Response submitted successfully!");
+    if (!firstname || !lastname || !question1.replace(/\s/g, '')) {
+      alert("Please fill out all fields.");
+      return;
+    }
 
-        // Clear form and local storage
-        form.reset();
-        localStorage.removeItem("firstname");
-        localStorage.removeItem("lastname");
-        localStorage.removeItem("question1");
-        localStorage.removeItem("savedTime");
-        document.getElementById("saved-message").textContent = "";
+    const { error } = await supabase
+      .from("gsc_response")
+      .insert([{ firstname, lastname, question1 }]);
+
+    if (error) {
+      alert("Submission failed: " + error.message);
+    } else {
+      alert("Response submitted successfully!");
+      form.reset();
+      document.getElementById("question1").innerHTML = '<table id="answer-table"></table>';
+      localStorage.clear();
+      document.getElementById("saved-message").textContent = "";
+    }
+  });
+
+  // Add to table
+  window.addToExistingTable = function () {
+    const rowCount = parseInt(document.getElementById("add-rows").value, 10);
+    const colCount = parseInt(document.getElementById("add-cols").value, 10);
+    const table = document.getElementById("answer-table");
+
+    if (!table) {
+      alert("No table found.");
+      return;
+    }
+
+    const currentCols = table.rows[0]?.cells.length || 0;
+
+    // Add rows
+    for (let i = 0; i < rowCount; i++) {
+      const row = table.insertRow();
+      for (let j = 0; j < (colCount || currentCols || 1); j++) {
+        const cell = row.insertCell();
+        cell.contentEditable = "true";
+        cell.style.border = "1px solid #999";
+        cell.style.padding = "6px";
+        cell.style.minWidth = "80px";
       }
-    });
-  </script>
+    }
+
+    // Add columns
+    if (colCount > 0) {
+      for (let i = 0; i < table.rows.length; i++) {
+        const row = table.rows[i];
+        while (row.cells.length < currentCols + colCount) {
+          const cell = row.insertCell();
+          cell.contentEditable = "true";
+          cell.style.border = "1px solid #999";
+          cell.style.padding = "6px";
+          cell.style.minWidth = "80px";
+        }
+      }
+    }
+  };
+</script>
 </body>
 </html>
