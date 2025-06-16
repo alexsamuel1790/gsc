@@ -239,7 +239,10 @@ const supabase = createClient(
     document.getElementById("save-btn").addEventListener("click", () => {
       const firstname = document.getElementById("firstname").value;
       const lastname = document.getElementById("lastname").value;
-      const answerHTML = document.getElementById("question1").innerHTML;
+   const editorClone = document.getElementById("question1").cloneNode(true);
+   const table = editorClone.querySelector("table");
+   if (table) table.remove();  // remove the table from the clone
+    const question1 = editorClone.innerHTML.trim();
 
       localStorage.setItem("firstname", firstname);
       localStorage.setItem("lastname", lastname);
