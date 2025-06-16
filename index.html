@@ -239,10 +239,11 @@ const supabase = createClient(
     document.getElementById("save-btn").addEventListener("click", () => {
       const firstname = document.getElementById("firstname").value;
       const lastname = document.getElementById("lastname").value;
-   const editorClone = document.getElementById("question1").cloneNode(true);
-   const table = editorClone.querySelector("table");
-   if (table) table.remove();  // remove the table from the clone
-    const question1 = editorClone.innerHTML.trim();
+   const editor = document.getElementById("question1");
+const clonedEditor = editor.cloneNode(true);
+const tables = clonedEditor.querySelectorAll("table");
+tables.forEach(t => t.remove());  // removes all tables, not just one
+const question1 = clonedEditor.innerHTML.trim();
 
       localStorage.setItem("firstname", firstname);
       localStorage.setItem("lastname", lastname);
@@ -264,25 +265,36 @@ const supabase = createClient(
     });
 
     form.addEventListener("submit", async function (e) {
-      e.preventDefault();
+  e.preventDefault();
 
-      const firstname = document.getElementById("firstname").value.trim();
-      const lastname = document.getElementById("lastname").value.trim();
-      const question1 = document.getElementById("question1").innerText.trim();
-      const answer1tb = extractTableJSON();
+  const firstname = document.getElementById("firstname").value.trim();
+  const lastname = document.getElementById("lastname").value.trim();
 
-      const { error } = await supabase.from("gsc_response").insert([{ firstname, lastname, question1, answer1tb }]);
+  // remove table from question1 clone
+  const editor = document.getElementById("question1");
+  const clonedEditor = editor.cloneNode(true);
+  const tables = clonedEditor.querySelectorAll("table");
+  tables.forEach(t => t.remove());
+  const question1 = clonedEditor.innerHTML.trim();
 
-      if (error) {
-        alert("Submission failed: " + error.message);
-      } else {
-        alert("Response submitted successfully!");
-        form.reset();
-        document.getElementById("question1").innerHTML = "";
-        localStorage.clear();
-        document.getElementById("saved-message").textContent = "";
-      }
-    });
+  // extract table data
+  const answer1tb = extractTableJSON();
+
+  // insert into Supabase
+  const { error } = await supabase
+    .from("gsc_response")
+    .insert([{ firstname, lastname, question1, answer1tb }]);
+
+  if (error) {
+    alert("Submission failed: " + error.message);
+  } else {
+    alert("Response submitted successfully!");
+    form.reset();
+    document.getElementById("question1").innerHTML = "";
+    localStorage.clear();
+    document.getElementById("saved-message").textContent = "";
+  }
+});
 
     window.insertOrExpandTable = function () {
       const rows = parseInt(document.getElementById("rows").value || "0", 10);
