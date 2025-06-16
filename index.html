@@ -16,6 +16,7 @@
       align-items: center;
       justify-content: center;
     }
+
     .form-container {
       background: white;
       padding: 30px 40px;
@@ -27,72 +28,83 @@
       overflow-y: auto;
       position: relative;
     }
+
     h2 {
       text-align: center;
       margin-bottom: 24px;
       color: #333;
+      font-size: 24px;
     }
+
     .name-fields {
       display: flex;
       justify-content: flex-end;
       gap: 10px;
       margin-bottom: 16px;
     }
+
     .name-fields input {
       width: 48%;
     }
-    input {
+
+    input, textarea {
       width: 100%;
       padding: 12px 16px;
+      margin: 10px 0;
       border: 1px solid #ccc;
       border-radius: 8px;
       font-size: 16px;
     }
-    .question-textarea {
-      background: #f9f9f9;
-      height: 250px;
-      width: 100%;
+
+    #question1 {
+      min-height: 250px;
       border: 1px solid #ccc;
       border-radius: 8px;
       padding: 12px;
       font-size: 16px;
-      resize: vertical;
+      line-height: 24px;
+      overflow: auto;
     }
-    .answer-textarea {
-      height: 250px;
-      width: 100%;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      padding: 12px;
+
+    #question1 table td {
       font-size: 16px;
-      overflow-y: auto;
+      line-height: 24px;
     }
-    button {
-      width: 48%;
-      padding: 12px;
-      background: #5c6bc0;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      margin-top: 12px;
-    }
+
     .button-group {
       display: flex;
       justify-content: space-between;
       gap: 10px;
     }
+
+    .table-controls {
+      margin-bottom: 10px;
+    }
+
+    .table-controls input {
+      width: 50px;
+      margin-right: 8px;
+    }
+
+    button {
+      background: #5c6bc0;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      padding: 12px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #3f51b5;
+    }
+
     #saved-message {
       font-size: 14px;
       color: #333;
       text-align: right;
       margin-top: 10px;
-    }
-    .table-controls {
-      display: flex;
-      gap: 10px;
-      margin: 10px 0;
     }
   </style>
 </head>
@@ -105,37 +117,27 @@
         <input id="lastname" type="text" placeholder="Last Name" required />
       </div>
 
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <label for="question-display"><strong>Question</strong></label>
-        <a href="https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fraw.githubusercontent.com%2Falexsamuel1790%2Fgsc%2Frefs%2Fheads%2Fmain%2FCore%2520KPI%2520Operational%2520Definitions%2520%2526%2520Targets_EJM.docx" target="_blank">
-          <img src="https://img.icons8.com/color/32/000000/microsoft-word-2019--v1.png" />
-        </a>
-      </div>
-
-      <textarea id="question-display" class="question-textarea" readonly>
+      <label for="question-display"><strong>Question</strong></label>
+      <textarea id="question-display" readonly rows="6">
 Dear Applicant:
+Please read the instructions and complete the assignment...
 
-Please read the instructions below and complete the 4-part assignment:
-
-PART I - Enclosed you will find a Study Summary describing a fictional clinical trial investigating the efficacy and safety of an antidepressant drug, genoxyl, in a geriatric population. Your target reader needs a concise overview of the study.
-
-Write a structured abstract (Objectives, Methods, Results, and Conclusion) based on the Study Summary. Your abstract should be structured with appropriate subheadings, should use complete sentences (not phrases as some journals allow), and should be approximately 300 words. List the word count at the end of your abstract.
+Write a structured abstract (Objectives, Methods, Results, Conclusion)
       </textarea>
 
-      <label for="question1"><strong>Your Answer</strong></label>
-      <div id="question1" class="answer-textarea" contenteditable="true"></div>
+      <label><strong>Your Answer</strong></label>
+      <div id="question1" contenteditable="true"></div>
 
       <div class="table-controls">
-        <input id="rows" type="number" min="0" placeholder="Rows" />
-        <input id="cols" type="number" min="0" placeholder="Columns" />
-        <button type="button" onclick="insertOrExpandTable()">Add Table/Expand</button>
+        <input type="number" id="rows" placeholder="Rows" min="0">
+        <input type="number" id="cols" placeholder="Cols" min="0">
+        <button type="button" onclick="insertOrExpandTable()">Insert/Expand Table</button>
       </div>
 
       <div class="button-group">
         <button type="button" id="save-btn">Save</button>
         <button type="submit">Submit</button>
       </div>
-
       <div id="saved-message"></div>
     </form>
   </div>
@@ -145,27 +147,21 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
 
     const supabase = createClient(
       "https://tubykfllyifovgqczodp.supabase.co",
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1YnlrZmxseWlmb3ZncWN6b2RwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg5OTA0MzMsImV4cCI6MjA2NDU2NjQzM30.VapXaouVNJP29T6Qc4pW-GyDeduAfjwwg83jkYgKtAM"
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
     );
 
     const form = document.getElementById("gsc-form");
 
-    // Save to localStorage
     document.getElementById("save-btn").addEventListener("click", () => {
-      const firstname = document.getElementById("firstname").value;
-      const lastname = document.getElementById("lastname").value;
-      const answerHTML = document.getElementById("question1").innerHTML;
-
-      localStorage.setItem("firstname", firstname);
-      localStorage.setItem("lastname", lastname);
-      localStorage.setItem("question1", answerHTML);
-
+      localStorage.setItem("firstname", document.getElementById("firstname").value);
+      localStorage.setItem("lastname", document.getElementById("lastname").value);
+      localStorage.setItem("question1", document.getElementById("question1").innerHTML);
       const savedTime = new Date().toLocaleString();
       localStorage.setItem("savedTime", savedTime);
       document.getElementById("saved-message").textContent = "Draft last saved on: " + savedTime;
+      alert("Saved!");
     });
 
-    // Load saved data
     window.addEventListener("DOMContentLoaded", () => {
       document.getElementById("firstname").value = localStorage.getItem("firstname") || "";
       document.getElementById("lastname").value = localStorage.getItem("lastname") || "";
@@ -176,20 +172,20 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
       }
     });
 
-    // Submit to Supabase
-    form.addEventListener("submit", async function (e) {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
+      const firstname = document.getElementById("firstname").value;
+      const lastname = document.getElementById("lastname").value;
+      const question1 = document.getElementById("question1").innerHTML;
 
-      const firstname = document.getElementById("firstname").value.trim();
-      const lastname = document.getElementById("lastname").value.trim();
-      const question1 = document.getElementById("question1").innerHTML.trim();
-
-      const { error } = await supabase.from("gsc_response").insert([{ firstname, lastname, question1 }]);
+      const { error } = await supabase.from("gsc_response").insert([
+        { firstname, lastname, question1 }
+      ]);
 
       if (error) {
         alert("Submission failed: " + error.message);
       } else {
-        alert("Response submitted successfully!");
+        alert("Submitted successfully!");
         form.reset();
         document.getElementById("question1").innerHTML = "";
         localStorage.clear();
@@ -197,16 +193,22 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
       }
     });
 
-    // Table logic
     window.insertOrExpandTable = function () {
-      const rows = parseInt(document.getElementById("rows").value || "0", 10);
-      const cols = parseInt(document.getElementById("cols").value || "0", 10);
+      const rowsInput = document.getElementById("rows").value;
+      const colsInput = document.getElementById("cols").value;
+
+      const rows = parseInt(rowsInput || "0", 10);
+      const cols = parseInt(colsInput || "0", 10);
+
       if ((isNaN(rows) || rows < 0) || (isNaN(cols) || cols < 0) || (rows === 0 && cols === 0)) {
         alert("Please enter at least one positive value for rows or columns.");
         return;
       }
 
       const editor = document.getElementById("question1");
+      editor.style.fontSize = "16px";
+      editor.style.lineHeight = "24px";
+
       let table = editor.querySelector("table#answer-table");
 
       if (!table) {
@@ -215,6 +217,7 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
         table.style.borderCollapse = "collapse";
         table.style.marginTop = "10px";
         table.style.width = "100%";
+
         for (let i = 0; i < rows; i++) {
           const tr = document.createElement("tr");
           for (let j = 0; j < cols; j++) {
@@ -222,6 +225,8 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
             td.contentEditable = "true";
             td.style.border = "1px solid #999";
             td.style.padding = "6px";
+            td.style.fontSize = "16px";
+            td.style.lineHeight = "24px";
             tr.appendChild(td);
           }
           table.appendChild(tr);
@@ -239,6 +244,8 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
               td.contentEditable = "true";
               td.style.border = "1px solid #999";
               td.style.padding = "6px";
+              td.style.fontSize = "16px";
+              td.style.lineHeight = "24px";
               tr.appendChild(td);
             }
             table.appendChild(tr);
@@ -253,6 +260,8 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
               td.contentEditable = "true";
               td.style.border = "1px solid #999";
               td.style.padding = "6px";
+              td.style.fontSize = "16px";
+              td.style.lineHeight = "24px";
               row.appendChild(td);
             }
           });
