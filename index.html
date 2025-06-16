@@ -5,8 +5,161 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>GSC Response Form</title>
   <style>
-    /* [styles unchanged for brevity, already correct from your code] */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .form-container {
+      background: white;
+      padding: 30px 40px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 24px;
+      color: #333;
+    }
+
+    .name-fields {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .name-fields input {
+      width: 48%;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    .question-textarea {
+      background: #f9f9f9;
+      height: 250px;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 16px;
+      resize: vertical;
+    }
+
+    .answer-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .answer-textarea {
+      height: 220px;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 16px;
+      font-family: 'Segoe UI', sans-serif;
+      overflow-y: auto;
+    }
+
+    .answer-textarea td {
+      font-size: 16px;
+      font-family: 'Segoe UI', sans-serif;
+      line-height: 1.5;
+      padding: 12px 6px;
+    }
+
+    .table-controls {
+      display: flex;
+      gap: 8px;
+    }
+
+   .table-controls input {
+  width: 60px;
+  height: 34px; /* Make height consistent */
+  padding: 6px 8px;
+  font-size: 14px;
+  border: 1px solid #aaa;
+  border-radius: 6px;
+  outline: none;
+}
+.table-controls button {
+  height: 34px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.3s;
+  white-space: nowrap;
+}
+
+.table-controls button:hover {
+  background-color: #45a049;
+}
+
+.table-controls button:nth-child(n+4) {
+  background-color: #f44336;
+}
+
+.table-controls button:nth-child(n+4):hover {
+  background-color: #d32f2f;
+}
+
+    
+    button {
+      width: 48%;
+      padding: 12px;
+      background: #5c6bc0;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 12px;
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    #saved-message {
+      font-size: 14px;
+      color: #333;
+      text-align: right;
+      margin-top: 10px;
+    }
   </style>
+
 </head>
 <body>
   <div class="form-container">
