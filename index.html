@@ -120,6 +120,15 @@
       background-color: #45a049;
     }
 
+    .table-controls button:nth-child(n+4) {
+  background-color: #f44336; /* red for delete */
+}
+
+.table-controls button:nth-child(n+4):hover {
+  background-color: #d32f2f;
+}
+
+    
     button {
       width: 48%;
       padding: 12px;
@@ -178,6 +187,8 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
           <input id="rows" type="number" min="0" placeholder="Rows" />
           <input id="cols" type="number" min="0" placeholder="Cols" />
           <button type="button" onclick="insertOrExpandTable()">➕ Table</button>
+           <button type="button" onclick="removeLastRow()">➖ Row</button>
+           <button type="button" onclick="removeLastColumn()">➖ Col</button>
         </div>
       </div>
 
@@ -322,6 +333,20 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
         }
       }
     };
+
+    window.removeLastRow = function () {
+  const table = document.querySelector("#question1 table#answer-table");
+  if (table && table.rows.length > 0) {
+    table.deleteRow(table.rows.length - 1);
+  }
+};
+
+window.removeLastColumn = function () {
+  const table = document.querySelector("#question1 table#answer-table");
+  if (table && table.rows.length > 0 && table.rows[0].cells.length > 0) {
+    Array.from(table.rows).forEach(row => row.deleteCell(row.cells.length - 1));
+  }
+};
   </script>
 </body>
 </html>
