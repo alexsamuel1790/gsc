@@ -236,23 +236,25 @@ const supabase = createClient(
       return { table: tableData };
     }
 
-    document.getElementById("save-btn").addEventListener("click", () => {
-      const firstname = document.getElementById("firstname").value;
-      const lastname = document.getElementById("lastname").value;
-   const editor = document.getElementById("question1");
-const clonedEditor = editor.cloneNode(true);
-const tables = clonedEditor.querySelectorAll("table");
-tables.forEach(t => t.remove());  // removes all tables, not just one
-const question1 = clonedEditor.innerHTML.trim();
+   document.getElementById("save-btn").addEventListener("click", () => {
+  const firstname = document.getElementById("firstname").value;
+  const lastname = document.getElementById("lastname").value;
 
-      localStorage.setItem("firstname", firstname);
-      localStorage.setItem("lastname", lastname);
-      localStorage.setItem("question1", answerHTML);
+  const editor = document.getElementById("question1");
+  const clonedEditor = editor.cloneNode(true);
+  const tables = clonedEditor.querySelectorAll("table");
+  tables.forEach(t => t.remove());
 
-      const savedTime = new Date().toLocaleString();
-      localStorage.setItem("savedTime", savedTime);
-      document.getElementById("saved-message").textContent = "Draft last saved on: " + savedTime;
-    });
+  const question1 = clonedEditor.innerText.trim();  // plain text only
+
+  localStorage.setItem("firstname", firstname);
+  localStorage.setItem("lastname", lastname);
+  localStorage.setItem("question1", question1);  // ✅ correct variable
+
+  const savedTime = new Date().toLocaleString();
+  localStorage.setItem("savedTime", savedTime);
+  document.getElementById("saved-message").textContent = "Draft last saved on: " + savedTime;
+});
 
     window.addEventListener("DOMContentLoaded", () => {
       document.getElementById("firstname").value = localStorage.getItem("firstname") || "";
