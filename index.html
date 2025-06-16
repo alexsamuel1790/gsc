@@ -104,24 +104,29 @@
   border-radius: 6px;
   outline: none;
 }
-
 .table-controls button {
-  height: 34px; /* Match input height */
-  padding: 0 12px; /* Horizontal padding only */
+  height: 34px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
   background-color: #4CAF50;
   color: white;
   border: none;
   border-radius: 6px;
   font-size: 14px;
+  font-family: inherit;
   cursor: pointer;
   transition: background 0.3s;
+  white-space: nowrap;
 }
-    .table-controls button:hover {
-      background-color: #45a049;
-    }
 
-    .table-controls button:nth-child(n+4) {
-  background-color: #f44336; /* red for delete */
+.table-controls button:hover {
+  background-color: #45a049;
+}
+
+.table-controls button:nth-child(n+4) {
+  background-color: #f44336;
 }
 
 .table-controls button:nth-child(n+4):hover {
