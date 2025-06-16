@@ -264,23 +264,25 @@ const question1 = clonedEditor.innerHTML.trim();
       }
     });
 
-    form.addEventListener("submit", async function (e) {
+form.addEventListener("submit", async function (e) {
   e.preventDefault();
 
   const firstname = document.getElementById("firstname").value.trim();
   const lastname = document.getElementById("lastname").value.trim();
 
-  // remove table from question1 clone
+  // Clone the answer editor and remove any tables
   const editor = document.getElementById("question1");
   const clonedEditor = editor.cloneNode(true);
   const tables = clonedEditor.querySelectorAll("table");
   tables.forEach(t => t.remove());
-  const question1 = clonedEditor.innerHTML.trim();
 
-  // extract table data
+  // Extract only plain text (no HTML)
+  const question1 = clonedEditor.innerText.trim();
+
+  // Extract structured table as JSON
   const answer1tb = extractTableJSON();
 
-  // insert into Supabase
+  // Insert into Supabase
   const { error } = await supabase
     .from("gsc_response")
     .insert([{ firstname, lastname, question1, answer1tb }]);
@@ -295,6 +297,7 @@ const question1 = clonedEditor.innerHTML.trim();
     document.getElementById("saved-message").textContent = "";
   }
 });
+
 
     window.insertOrExpandTable = function () {
       const rows = parseInt(document.getElementById("rows").value || "0", 10);
