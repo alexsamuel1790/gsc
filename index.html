@@ -16,6 +16,7 @@
       align-items: center;
       justify-content: center;
     }
+
     .form-container {
       background: white;
       padding: 30px 40px;
@@ -27,20 +28,24 @@
       overflow-y: auto;
       position: relative;
     }
+
     h2 {
       text-align: center;
       margin-bottom: 24px;
       color: #333;
     }
+
     .name-fields {
       display: flex;
       justify-content: flex-end;
       gap: 10px;
       margin-bottom: 16px;
     }
+
     .name-fields input {
       width: 48%;
     }
+
     input {
       width: 100%;
       padding: 12px 16px;
@@ -48,6 +53,7 @@
       border-radius: 8px;
       font-size: 16px;
     }
+
     .question-textarea {
       background: #f9f9f9;
       height: 250px;
@@ -58,21 +64,62 @@
       font-size: 16px;
       resize: vertical;
     }
+
+    .table-controls-wrapper {
+      position: relative;
+    }
+
     .answer-textarea {
       height: 250px;
       width: 100%;
       border: 1px solid #ccc;
       border-radius: 8px;
       padding: 12px;
-      font-size: 10px;
+      font-size: 16px;
+      font-family: 'Segoe UI', sans-serif;
       overflow-y: auto;
     }
 
     .answer-textarea td {
-  font-size: 10px;         /* Same size as answer-textarea */
-  font-family: 'Segoe UI', sans-serif;
-  line-height: 1.5;
-}
+      font-size: 16px;
+      font-family: 'Segoe UI', sans-serif;
+      line-height: 1.5;
+      padding: 12px 6px;
+    }
+
+    .table-controls {
+      position: absolute;
+      top: -45px;
+      right: 0;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .table-controls input {
+      width: 60px;
+      padding: 6px 8px;
+      font-size: 14px;
+      border: 1px solid #aaa;
+      border-radius: 6px;
+      outline: none;
+    }
+
+    .table-controls button {
+      padding: 6px 12px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .table-controls button:hover {
+      background-color: #45a049;
+    }
+
     button {
       width: 48%;
       padding: 12px;
@@ -84,21 +131,18 @@
       cursor: pointer;
       margin-top: 12px;
     }
+
     .button-group {
       display: flex;
       justify-content: space-between;
       gap: 10px;
     }
+
     #saved-message {
       font-size: 14px;
       color: #333;
       text-align: right;
       margin-top: 10px;
-    }
-    .table-controls {
-      display: flex;
-      gap: 10px;
-      margin: 10px 0;
     }
   </style>
 </head>
@@ -129,12 +173,13 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
       </textarea>
 
       <label for="question1"><strong>Your Answer</strong></label>
-      <div id="question1" class="answer-textarea" contenteditable="true"></div>
-
-      <div class="table-controls">
-        <input id="rows" type="number" min="0" placeholder="Rows" />
-        <input id="cols" type="number" min="0" placeholder="Columns" />
-        <button type="button" onclick="insertOrExpandTable()">Add Table/Expand</button>
+      <div class="table-controls-wrapper">
+        <div id="question1" class="answer-textarea" contenteditable="true"></div>
+        <div class="table-controls">
+          <input id="rows" type="number" min="0" placeholder="Rows" />
+          <input id="cols" type="number" min="0" placeholder="Cols" />
+          <button type="button" onclick="insertOrExpandTable()">➕ Table</button>
+        </div>
       </div>
 
       <div class="button-group">
@@ -156,7 +201,6 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
 
     const form = document.getElementById("gsc-form");
 
-    // Save to localStorage
     document.getElementById("save-btn").addEventListener("click", () => {
       const firstname = document.getElementById("firstname").value;
       const lastname = document.getElementById("lastname").value;
@@ -171,7 +215,6 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
       document.getElementById("saved-message").textContent = "Draft last saved on: " + savedTime;
     });
 
-    // Load saved data
     window.addEventListener("DOMContentLoaded", () => {
       document.getElementById("firstname").value = localStorage.getItem("firstname") || "";
       document.getElementById("lastname").value = localStorage.getItem("lastname") || "";
@@ -182,7 +225,6 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
       }
     });
 
-    // Submit to Supabase
     form.addEventListener("submit", async function (e) {
       e.preventDefault();
 
@@ -203,7 +245,6 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
       }
     });
 
-    // Table logic
     window.insertOrExpandTable = function () {
       const rows = parseInt(document.getElementById("rows").value || "0", 10);
       const cols = parseInt(document.getElementById("cols").value || "0", 10);
@@ -226,8 +267,13 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
           for (let j = 0; j < cols; j++) {
             const td = document.createElement("td");
             td.contentEditable = "true";
-            td.style.border = "1px solid #999";
-            td.style.padding = "6px";
+            td.style.cssText = `
+              border: 1px solid #999;
+              font-size: 16px;
+              font-family: 'Segoe UI', sans-serif;
+              line-height: 1.5;
+              padding: 12px 6px;
+            `;
             tr.appendChild(td);
           }
           table.appendChild(tr);
@@ -243,8 +289,13 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
             for (let j = 0; j < (cols > 0 ? cols : existingCols); j++) {
               const td = document.createElement("td");
               td.contentEditable = "true";
-              td.style.border = "1px solid #999";
-              td.style.padding = "6px";
+              td.style.cssText = `
+                border: 1px solid #999;
+                font-size: 16px;
+                font-family: 'Segoe UI', sans-serif;
+                line-height: 1.5;
+                padding: 12px 6px;
+              `;
               tr.appendChild(td);
             }
             table.appendChild(tr);
@@ -257,8 +308,13 @@ Write a structured abstract (Objectives, Methods, Results, and Conclusion) based
             for (let j = currentCols; j < currentCols + cols; j++) {
               const td = document.createElement("td");
               td.contentEditable = "true";
-              td.style.border = "1px solid #999";
-              td.style.padding = "6px";
+              td.style.cssText = `
+                border: 1px solid #999;
+                font-size: 16px;
+                font-family: 'Segoe UI', sans-serif;
+                line-height: 1.5;
+                padding: 12px 6px;
+              `;
               row.appendChild(td);
             }
           });
