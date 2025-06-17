@@ -237,32 +237,32 @@ const supabase = createClient(
     }
 
     // ✅ Updated Save button logic
-    document.getElementById("save-btn").addEventListener("click", () => {
-      const firstname = document.getElementById("firstname").value.trim();
-      const lastname = document.getElementById("lastname").value.trim();
-      const question1El = document.getElementById("question1");
-      const question1 = question1El && typeof question1El.value === "string" ? question1El.value.trim() : "";
+document.getElementById("save-btn").addEventListener("click", () => {
+  const firstname = document.getElementById("firstname").value.trim();
+  const lastname = document.getElementById("lastname").value.trim();
+  const question1El = document.getElementById("question1");
+  const question1 = question1El ? question1El.innerText.trim() : "";
 
-      if (!firstname || !lastname || !question1) {
-        alert("Please fill out all fields before saving.");
-        return;
-      }
+  if (!firstname || !lastname || !question1) {
+    alert("Some fields are empty. Your draft will still be saved.");
+  }
 
-      try {
-        localStorage.setItem("firstname", firstname);
-        localStorage.setItem("lastname", lastname);
-        localStorage.setItem("question1", question1);
+  try {
+    localStorage.setItem("firstname", firstname);
+    localStorage.setItem("lastname", lastname);
+    localStorage.setItem("question1", question1);
 
-        const savedTime = new Date().toLocaleString();
-        localStorage.setItem("savedTime", savedTime);
-        document.getElementById("saved-message").textContent = "Draft last saved on: " + savedTime;
+    const savedTime = new Date().toLocaleString();
+    localStorage.setItem("savedTime", savedTime);
+    document.getElementById("saved-message").textContent = "Draft last saved on: " + savedTime;
 
-        alert("Draft saved locally!");
-      } catch (e) {
-        console.error("Save to localStorage failed:", e);
-        alert("Error saving your draft locally.");
-      }
-    });
+    alert("Draft saved locally!");
+  } catch (e) {
+    console.error("Save to localStorage failed:", e);
+    alert("Error saving your draft locally.");
+  }
+});
+
 
     window.addEventListener("DOMContentLoaded", () => {
       document.getElementById("firstname").value = localStorage.getItem("firstname") || "";
