@@ -241,9 +241,7 @@ document.getElementById("save-btn").addEventListener("click", () => {
   const firstname = document.getElementById("firstname").value.trim();
   const lastname = document.getElementById("lastname").value.trim();
   const question1El = document.getElementById("question1");
-
-  // ✅ Gets text from both free text and table cells
-  const question1 = question1El ? question1El.innerText.trim() : "";
+  const question1 = question1El ? question1El.innerHTML.trim() : ""; // preserve table + formatting
 
   try {
     localStorage.setItem("firstname", firstname);
@@ -260,6 +258,7 @@ document.getElementById("save-btn").addEventListener("click", () => {
     alert("Error saving your draft locally.");
   }
 });
+
 
 
 
